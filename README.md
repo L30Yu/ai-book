@@ -10,6 +10,13 @@ https://www.loom.com/share/264e5cfe3ea44c94b60ac0922cf99081?sid=27bbb4c2-3cb1-42
 
 
 
+![image](https://github.com/user-attachments/assets/bea5a1a1-669c-49d3-ae7f-67995111bd1b)
+
+![image](https://github.com/user-attachments/assets/14313ce6-2b52-4680-b7e9-a6e7851313b6)
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
