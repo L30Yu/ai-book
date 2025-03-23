@@ -1,3 +1,14 @@
+used Next.js to build the app, Convex as our DB, Clerk to do Auth. 
+
+- open one terminal to start Next.js app: npm run dev
+- open the other terminal to run Convex if needed: npx convex dev
+  
+demo:
+https://www.loom.com/share/264e5cfe3ea44c94b60ac0922cf99081?sid=27bbb4c2-3cb1-4245-b28a-5a9ab5ffe4d1
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
