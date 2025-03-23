@@ -60,11 +60,15 @@ export const fetchBookContent = async (bookId: string) => {
   const metadataUrl = `https://www.gutenberg.org/ebooks/${bookId}`;
 
   const contentResponse = await fetch(contentUrl);
-  const content = await contentResponse.text();
-
-  const metadataResponse = await fetch(metadataUrl);
-  const metadataHtml = await metadataResponse.text();
-  const metadataValue = getDataFromHtml(metadataHtml);
+  if(contentResponse.status < 300) {
+    const content = await contentResponse.text();
   
-  return { content, metadata: metadataHtml, ...metadataValue };
+    const metadataResponse = await fetch(metadataUrl);
+    const metadataHtml = await metadataResponse.text();
+    const metadataValue = getDataFromHtml(metadataHtml);
+    
+    return { content, ...metadataValue };
+  } else {
+    return null;
+  }
 };

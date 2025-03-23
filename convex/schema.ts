@@ -5,9 +5,8 @@ export default defineSchema({
   books: defineTable({
     tokenIdentifier: v.string(),
     bookId: v.string(),
-    title: v.string(),
     content: v.string(),
-    metadata: v.any(),
+    title: v.string(),
     author: v.optional(v.string()),
     language: v.optional(v.string()),
     releaseDate: v.optional(v.string()),
@@ -18,11 +17,16 @@ export default defineSchema({
     copyrightStatus: v.optional(v.string()),
     downloads: v.optional(v.string()),
     note: v.optional(v.string()),
+    fileId: v.id("_storage"),
   }).index('by_tokenIdentifier', ['tokenIdentifier'])
   .index('by_bookId', ['bookId'])
   .index("by_tokenIdentifier_and_bookId", ["tokenIdentifier", "bookId"]),
+  
   documents: defineTable({
-    title: v.string(),
+    bookId: v.string(),
+    content: v.string(),
     tokenIdentifier: v.string(),
-  }).index('by_tokenIdentifier', ['tokenIdentifier']),
+  }).index('by_tokenIdentifier', ['tokenIdentifier'])
+  .index('by_bookId', ['bookId'])
+  .index("by_tokenIdentifier_and_bookId", ["tokenIdentifier", "bookId"]),
 });

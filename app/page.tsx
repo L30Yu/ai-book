@@ -9,52 +9,66 @@ import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Authenticated, Unauthenticated } from "convex/react"
+import Link from "next/link";
+import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner"
 
 export default function Home() {
-  const { isLoading, isAuthenticated } = useConvexAuth();
-  const documents = useQuery(api.documents.getDocuments);
-  const createDocument = useMutation(api.documents.createDocument);
+  const { isAuthenticated } = useConvexAuth();
   const [bookId, setBookId] = useState("");
+
+  const createDocument = useMutation(api.documents.createDocument);
+
+  const generateUploadUrl = useMutation(api.books.generateUploadUrl);
+
   const [loading, setLoading] = useState(false);
-  const [bookData, setBookData] = useState<{
-    content: string;
-    metadata: string;
-    title: string;
-    author?: string;
-    language?: string;
-    releaseDate?: string;
-  } | null>(null);
 
   const saveBook = useMutation(api.books.saveBook);
   const books = useQuery(api.books.getBooksByUser); 
-  const savedBook = useQuery(api.books.getBookById, {bookId}); 
-  console.log('ttt savedBook:',savedBook)
+  const savedBook = useQuery(api.books.getBookById, {bookId});
 
   const handleFetchBook = async () => {
     setLoading(true);
-    if(savedBook && savedBook.bookId === bookId) {
-      setBookData({ ...savedBook });
-    } else {
-      const { content, metadata, ...args } = await fetchBookContent(bookId);
-      console.log('ttt content', content);
-      console.log('ttt metadata', metadata);
-      setBookData({ content, metadata, ...args });
+    try{
+      if(!savedBook){
+        const fetchedBookData = await fetchBookContent(bookId);
+        if (!fetchedBookData) {
 
-      // Save the book to Convex
-      const res = await saveBook({
-        bookId,
-        content,
-        metadata,
-        ...args,
-      });
+         toast('Can not find book with id:'+bookId);
+         return;
+        }
+        const { content, ...args } = fetchedBookData;
+
+        const url = await generateUploadUrl();
+        const blob = new Blob([content], { type: "text/plain" });
+
+        const result = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: blob,
+        });
+        const { storageId } = await result.json();
+          
+        // Save the book to Convex
+        await saveBook({
+          bookId,
+          fileId: storageId as Id<"_storage">,
+          content: content.substring(0, 5000 * 4),
+          ...args,
+        });
+        // Analyze the book text content
+        await createDocument({bookId, fileId: storageId, 
+          bookContent: content.substring(0, 5000 * 4),})
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -76,7 +90,7 @@ export default function Home() {
             <Button disabled={loading} onClick={handleFetchBook}>Fetch Book</Button>
             </div>
             <h2>Saved Books</h2>
-            <div>
+            <div className="flex items-center py-4 gap-8">
               {books?.map((book) => (
                 <Card key={book.bookId} className="w-[350px]">
                   <CardHeader>
@@ -84,8 +98,32 @@ export default function Home() {
                       <strong>{book.title}</strong> - {book.bookId}
                     </CardTitle>
                   </CardHeader>
+                  <CardContent>
+                    <div>
+                      <div className="space-y-1 m-2">
+                        <p className="text-sm font-medium leading-none">
+                          Author
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {book.author}
+                        </p>
+                      </div>
+                      <div className="space-y-1 m-2">
+                        <p className="text-sm font-medium leading-none">
+                        Language
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {book.language}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
                   <CardFooter className="flex justify-between">
-                    <Button>View</Button>
+                    <Button>
+                    <Link href={`/books/${book.bookId}`}>
+                      View Book Content and Text Analyze
+                    </Link>
+                    </Button>
                   </CardFooter>
                 </Card>
               ))}
@@ -94,17 +132,6 @@ export default function Home() {
           : "Please Sign in or Sign up!"
         }
       </main>
-      {bookData && (<div className="w-1/3 bg-gray-50 p-6 border-l overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-4">Book Metadata</h2>
-        
-          <pre className="whitespace-pre-wrap bg-white p-4 rounded">
-            {bookData.content}
-          </pre>
-          <pre className="whitespace-pre-wrap bg-white p-4 rounded">
-            {bookData.metadata}
-          </pre>
-        
-      </div>)}
     </div>
   );
 }

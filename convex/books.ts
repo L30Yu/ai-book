@@ -6,7 +6,7 @@ export const saveBook = mutation({
   args: {
     bookId: v.string(),
     content: v.string(),
-    metadata: v.any(),
+    fileId: v.id("_storage"),
     title: v.string(),
     author: v.optional(v.string()),
     language: v.optional(v.string()),
@@ -69,6 +69,15 @@ export const getBookById = query({
           q.eq("tokenIdentifier", userId).eq("bookId", args.bookId)
         )
         .first();
-    return book;
+    if(!book) {
+      return null;
+    }
+    const fileUrl = await ctx.storage.getUrl(book.fileId);
+
+    return {book, fileUrl};
   },
+});
+
+export const generateUploadUrl = mutation(async (ctx) => {
+  return await ctx.storage.generateUploadUrl();
 });
