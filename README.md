@@ -1,5 +1,5 @@
-used Next.js to build the app, Convex as our DB, Clerk to do Auth, Groq to analyze the book content.
-It able to Sign up, Sign in, Real time to fetch data, display book text analyze result and book content. 
+## used Next.js to build the app, Convex as our DB, Clerk to do Auth, Groq to analyze the book content.
+## It able to Sign up, Sign in, Real time to fetch data, display book text analyze result and book content. 
 
 - open one terminal to start Next.js app: npm run dev
 - open the other terminal to run Convex if needed: npx convex dev
