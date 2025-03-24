@@ -31,11 +31,9 @@ export const saveBook = mutation({
 });
 
 export const getBooksByUser = query({
-  args: {
-  },
+  args: {},
   handler: async (ctx, args) => {
-
-    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier
+    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
 
     if (!userId) {
       return [];
@@ -43,9 +41,8 @@ export const getBooksByUser = query({
 
     return await ctx.db
       .query("books")
-      .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier',
-        userId
-      )).collect()
+      .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", userId))
+      .collect();
   },
 });
 
@@ -54,27 +51,27 @@ export const getBookById = query({
     bookId: v.string(),
   },
   handler: async (ctx, args) => {
-    if(!args.bookId) {
+    if (!args.bookId) {
       return;
     }
 
-    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier
+    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     if (!userId) {
       throw new Error("Unauthenticated call to getBookById");
     }
 
     const book = await ctx.db
       .query("books")
-        .withIndex("by_tokenIdentifier_and_bookId", (q) => 
-          q.eq("tokenIdentifier", userId).eq("bookId", args.bookId)
-        )
-        .first();
-    if(!book) {
+      .withIndex("by_tokenIdentifier_and_bookId", (q) =>
+        q.eq("tokenIdentifier", userId).eq("bookId", args.bookId)
+      )
+      .first();
+    if (!book) {
       return null;
     }
     const fileUrl = await ctx.storage.getUrl(book.fileId);
 
-    return {book, fileUrl};
+    return { book, fileUrl };
   },
 });
 

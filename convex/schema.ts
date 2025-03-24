@@ -18,15 +18,17 @@ export default defineSchema({
     downloads: v.optional(v.string()),
     note: v.optional(v.string()),
     fileId: v.id("_storage"),
-  }).index('by_tokenIdentifier', ['tokenIdentifier'])
-  .index('by_bookId', ['bookId'])
-  .index("by_tokenIdentifier_and_bookId", ["tokenIdentifier", "bookId"]),
-  
+  })
+    .index("by_tokenIdentifier", ["tokenIdentifier"])
+    .index("by_bookId", ["bookId"])
+    .index("by_tokenIdentifier_and_bookId", ["tokenIdentifier", "bookId"]),
+
   documents: defineTable({
     bookId: v.string(),
     content: v.string(),
     tokenIdentifier: v.string(),
-  }).index('by_tokenIdentifier', ['tokenIdentifier'])
-  .index('by_bookId', ['bookId'])
-  .index("by_tokenIdentifier_and_bookId", ["tokenIdentifier", "bookId"]),
+  })
+    .index("by_tokenIdentifier", ["tokenIdentifier"])
+    .index("by_bookId", ["bookId"])
+    .index("by_tokenIdentifier_and_bookId", ["tokenIdentifier", "bookId"]),
 });

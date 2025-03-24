@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
-import { toast } from "sonner"
+import { toast } from "sonner";
 
 export default function Home() {
   const { isAuthenticated } = useConvexAuth();
@@ -28,18 +28,17 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const saveBook = useMutation(api.books.saveBook);
-  const books = useQuery(api.books.getBooksByUser); 
-  const savedBook = useQuery(api.books.getBookById, {bookId});
+  const books = useQuery(api.books.getBooksByUser);
+  const savedBook = useQuery(api.books.getBookById, { bookId });
 
   const handleFetchBook = async () => {
     setLoading(true);
-    try{
-      if(!savedBook){
+    try {
+      if (!savedBook) {
         const fetchedBookData = await fetchBookContent(bookId);
         if (!fetchedBookData) {
-
-         toast('Can not find book with id:'+bookId);
-         return;
+          toast("Can not find book with id:" + bookId);
+          return;
         }
         const { content, ...args } = fetchedBookData;
 
@@ -52,7 +51,7 @@ export default function Home() {
           body: blob,
         });
         const { storageId } = await result.json();
-          
+
         // Save the book to Convex
         await saveBook({
           bookId,
@@ -61,8 +60,11 @@ export default function Home() {
           ...args,
         });
         // Analyze the book text content
-        await createDocument({bookId, fileId: storageId, 
-          bookContent: content.substring(0, 5000 * 4),})
+        await createDocument({
+          bookId,
+          fileId: storageId,
+          bookContent: content.substring(0, 5000 * 4),
+        });
       }
     } catch (error) {
       console.error(error);
@@ -74,20 +76,21 @@ export default function Home() {
   return (
     <div className="flex h-screen p-20">
       <main className="flex-1 p-6 overflow-y-auto">
-        
-        {isAuthenticated ? 
+        {isAuthenticated ? (
           <>
             <h1>Project Gutenberg Book with AI</h1>
 
             <div className="flex items-center py-4 gap-8">
-            <Input
-              type="text"
-              placeholder="Enter Book ID"
-              value={bookId}
-              onChange={(e) => setBookId(e.target.value)}
-              disabled={loading}
-            />
-            <Button disabled={loading} onClick={handleFetchBook}>Fetch Book</Button>
+              <Input
+                type="text"
+                placeholder="Enter Book ID"
+                value={bookId}
+                onChange={(e) => setBookId(e.target.value)}
+                disabled={loading}
+              />
+              <Button disabled={loading} onClick={handleFetchBook}>
+                Fetch Book
+              </Button>
             </div>
             <h2>Saved Books</h2>
             <div className="flex items-center py-4 gap-8">
@@ -110,7 +113,7 @@ export default function Home() {
                       </div>
                       <div className="space-y-1 m-2">
                         <p className="text-sm font-medium leading-none">
-                        Language
+                          Language
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {book.language}
@@ -120,17 +123,18 @@ export default function Home() {
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Button>
-                    <Link href={`/books/${book.bookId}`}>
-                      View Book Content and Text Analyze
-                    </Link>
+                      <Link href={`/books/${book.bookId}`}>
+                        View Book Content and Text Analyze
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
               ))}
             </div>
           </>
-          : "Please Sign in or Sign up!"
-        }
+        ) : (
+          "Please Sign in or Sign up!"
+        )}
       </main>
     </div>
   );
