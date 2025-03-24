@@ -3,6 +3,7 @@
 
 - open one terminal to start Next.js app: npm run dev
 - open the other terminal to run Convex if needed: npx convex dev
+- deployed to Vercel: https://ai-book-bd6v.vercel.app/
   
 Loom demo link:
 
