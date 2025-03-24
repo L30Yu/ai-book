@@ -7,7 +7,6 @@ import {
 import { ConvexError, v } from "convex/values";
 import Groq from "groq-sdk";
 import { internal } from "./_generated/api";
-import OpenAI from "openai";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const groqModel = "llama-3.3-70b-versatile";
