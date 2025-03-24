@@ -10,9 +10,7 @@ import { internal } from "./_generated/api";
 import OpenAI from "openai";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const groqModel = "llama-3.3-70b-versatile";
-const openaiModel = "gpt-3.5-turbo";
 
 export async function getChatCompletion(bookContent: string) {
   return groq.chat.completions.create({
